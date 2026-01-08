@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Bug Crash Darkness</title>
+    
+    <!-- Manifest inline untuk PWA -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkJ1ZyBDcmFzaCBEYXJrbmVzcyIsCiAgInNob3J0X25hbWUiOiAiQnVnQ3Jhc2giLAogICJkZXNjcmlwdGlvbiI6ICJBcGxpa2FzaSBCdWcgQW5kcm9pZCBQcmVtaXVtIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwMDAwMDAiLAogICJ0aGVtZV9jb2xvciI6ICIjOUMyN0IwIiwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQtcHJpbWFyeSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBQzBBQUFBZUNBTUFBQURHMlMvaEFBQUFBWE5TUjBJQXJzNGM2UUFBQURsVkVRVlI0WHUyZDhjMk5iVjJ4eGFHOTBiM0pzWVhOMFBXNWxkWE5sY25acFkyVnpBQUFBQ1hScFpBQUFBREVBQUFBQUJnQjh1V3k4QUFBQUpYUkZXSFJEY21WaGRHVnlJR1psY25OcGIyNGdhVzF3YjNKMFlXNWpaU2d3SUZSbGVIUXRVR0ZzWlc1a2FXNWxJRlpsY25OcGIyNHRaR1ZtWVhWc2RITUFBQUFwVFdsaFkydHBiM01nY21kaVlRQUFBQ1VGVVdWcFhBQUFBS2dBQUFBQnBBUzVxWWFBQUFCY2dBQUFBQW9BQnhhV1FBQUFBOEFBQUFDQUJZTmNBQUFBQk1BQUFBQ1FBdFdHZ0FBQUFjQUFBQUJnQVlwWU9Hd2dBQUFBQUFBRUFBRC8vLy8vL3c9PSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
+    
+    <style>
+        /* Reset dan styling dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Splash screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .splash-logo {
+            color: #9C27B0;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .splash-loading {
+            color: #9C27B0;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        /* Halaman login */
+        #login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 900;
+            padding: 20px;
+        }
+
+        .login-container {
+            background-color: #111111;
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.2);
+            border: 1px solid #333333;
+        }
+
+        .login-title {
+            color: #9C27B0;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(156, 39, 176, 0.3);
+        }
+
+        .login-subtitle {
+            color: #aaaaaa;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            color: #9C27B0;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #222222;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #9C27B0;
+            box-shadow: 0 0 5px rgba(156, 39, 176, 0.5);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-note {
+            color: #666666;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        /* Halaman utama */
+        #main-page {
+            display: none;
+            padding: 20px;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .app-title {
+            color: #9C27B0;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(156, 39, 176, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .app-subtitle {
+            color: #aaaaaa;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        .target-section {
+            width: 100%;
+            max-width: 500px;
+            background-color: #111111;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.2);
+            border: 1px solid #333333;
+        }
+
+        .section-title {
+            color: #9C27B0;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 15px;
+            background-color: #222222;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #9C27B0;
+            box-shadow: 0 0 10px rgba(156, 39, 176, 0.3);
+        }
+
+        .bug-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (min-width: 500px) {
+            .bug-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .bug-option {
+            padding: 15px;
+            background-color: #222222;
+            border: 2px solid #333333;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            user-select: none;
+        }
+
+        .bug-option:hover {
+            background-color: #333333;
+            transform: translateY(-3px);
+        }
+
+        .bug-option.selected {
+            background-color: rgba(156, 39, 176, 0.2);
+            border-color: #9C27B0;
+            color: #9C27B0;
+            font-weight: bold;
+        }
+
+        .execute-button {
+            width: 100%;
+            padding: 16px;
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .execute-button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.3);
+        }
+
+        .execute-button:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            width: 100%;
+            max-width: 500px;
+            background-color: #111111;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.2);
+            border: 1px solid #333333;
+            display: none;
+        }
+
+        .result-title {
+            color: #9C27B0;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .result-content {
+            color: #ffffff;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            text-align: center;
+            padding: 15px;
+            background-color: #222222;
+            border-radius: 10px;
+            word-break: break-word;
+        }
+
+        .app-footer {
+            margin-top: 40px;
+            color: #666666;
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 20px;
+        }
+
+        /* Ikon untuk PWA (inline base64) */
+        .app-icon {
+            display: none;
+        }
+    </style>
+    
+    <!-- Inline icon untuk PWA -->
+    <link rel="icon" href="data:image/png;base64,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">
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-logo">Bug Crash Darkness</div>
+        <div class="splash-loading">Memuat aplikasi...</div>
+    </div>
+
+    <!-- Halaman Login -->
+    <div id="login-page">
+        <div class="login-container">
+            <h1 class="login-title">Bug Crash Darkness</h1>
+            <p class="login-subtitle">Aplikasi bug Android premium</p>
+            
+            <div class="input-group">
+                <label class="input-label">Username</label>
+                <input type="text" id="username" class="input-field" placeholder="Masukkan username" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Password</label>
+                <input type="password" id="password" class="input-field" placeholder="Masukkan password" autocomplete="off">
+            </div>
+            
+            <button id="login-btn" class="login-button">MASUK</button>
+            
+            <p class="login-note">
+                Catatan: Aplikasi ini berjalan sepenuhnya offline. Data login disimpan lokal di perangkat Anda.
+            </p>
+        </div>
+    </div>
+
+    <!-- Halaman Utama -->
+    <div id="main-page">
+        <div class="app-header">
+            <h1 class="app-title">Bug Crash Darkness</h1>
+            <p class="app-subtitle">Tools Bug Android Premium</p>
+        </div>
+        
+        <div class="target-section">
+            <h2 class="section-title">Masukan Nomor Target</h2>
+            <input type="text" id="target-number" class="number-input" placeholder="Contoh: 081234567890" maxlength="15">
+            
+            <h2 class="section-title" style="margin-top: 30px;">Pilih Jenis Bug</h2>
+            <div class="bug-options">
+                <div class="bug-option" data-value="bug-crash">Bug Crash</div>
+                <div class="bug-option" data-value="bug-delay-invis">Bug Delay Invis</div>
+                <div class="bug-option" data-value="bug-xzx">Bug XZX</div>
+                <div class="bug-option" data-value="bug-auto-c1">Bug Auto C1</div>
+            </div>
+            
+            <button id="execute-btn" class="execute-button">EKSEKUSI BUG</button>
+        </div>
+        
+        <div class="result-section" id="result-section">
+            <h2 class="result-title">Hasil Eksekusi</h2>
+            <div class="result-content" id="result-content">
+                Hasil akan ditampilkan di sini...
+            </div>
+        </div>
+        
+        <div class="app-footer">
+            Aplikasi Bug Crash Darkness v1.0<br>
+            Berjalan 100% offline • Tidak memerlukan koneksi internet
+        </div>
+    </div>
+
+    <!-- Inline Service Worker dan PWA functionality -->
+    <script>
+        // Service Worker inline untuk PWA
+        const registerServiceWorker = () => {
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'bug-crash-darkness-v1.0';
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    return cache.addAll([
+                                        './',
+                                        './index.html'
+                                    ]);
+                                })
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    return response || fetch(event.request);
+                                })
+                        );
+                    });
+                    
+                    self.addEventListener('activate', event => {
+                        event.waitUntil(
+                            caches.keys().then(cacheNames => {
+                                return Promise.all(
+                                    cacheNames.map(cacheName => {
+                                        if (cacheName !== CACHE_NAME) {
+                                            return caches.delete(cacheName);
+                                        }
+                                    })
+                                );
+                            })
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            }
+        };
+
+        // Fungsi untuk menampilkan/menyembunyikan halaman
+        function showPage(pageId) {
+            document.querySelectorAll('div[id$="page"]').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'flex';
+        }
+
+        // Fungsi untuk splash screen
+        window.addEventListener('DOMContentLoaded', () => {
+            // Daftarkan Service Worker untuk PWA
+            registerServiceWorker();
+            
+            // Simulasi loading splash screen
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('splash-screen').style.display = 'none';
+                    
+                    // Cek apakah sudah login sebelumnya
+                    const isLoggedIn = localStorage.getItem('bugAppLoggedIn') === 'true';
+                    if (isLogged
